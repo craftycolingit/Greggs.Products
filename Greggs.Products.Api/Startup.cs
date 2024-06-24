@@ -1,7 +1,12 @@
+using Greggs.Products.Api.DataAccess;
+using Greggs.Products.Api.Models;
+using Greggs.Products.Api.Services.Concrete;
+using Greggs.Products.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace Greggs.Products.Api;
 
@@ -9,9 +14,13 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
         services.AddSwaggerGen();
+        
+        services.AddScoped<IDataAccess<Product>, ProductAccess>();
+        services.AddScoped<ICurrencyConverterService, CurrencyConverterService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
